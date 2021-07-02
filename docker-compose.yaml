@@ -1,0 +1,39 @@
+version: "3.7"
+
+networks:
+    monitor:
+        name: monitor
+
+services:
+    prometheus:
+        image: prom/prometheus:v2.28.0
+        container_name: prometheus
+        hostname: prometheus
+        volumes:
+            - "./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
+        ports:
+            - 9090:9090
+        restart: unless-stopped
+        networks:
+            - monitor
+    node-exporter:
+        image: prom/node-exporter:v1.1.2
+        container_name: node-exporter
+        hostname: node-exporter
+        ports:
+            - 9100:9100
+        restart: unless-stopped
+        networks:
+            - monitor
+    grafana:
+        image: grafana/grafana:8.0.4
+        container_name: grafana
+        hostname: grafana
+        volumes:
+            - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+            - ./grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yaml
+        ports:
+            - 3000:3000
+        restart: unless-stopped
+        networks:
+            - monitor
